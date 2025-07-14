@@ -28,7 +28,7 @@ const Login = async (req, res) => {
     if (result) {
         console.log(result);
 
-        const token = jwt.sign({ userId: result._id }, process.env.playerkey , { expiresIn: '1h' })
+        const token = jwt.sign({ userId: result._id }, process.env.key , { expiresIn: '1h' })
         res.send({
             code: 200,
             message: "Valid User",
