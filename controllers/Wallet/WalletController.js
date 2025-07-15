@@ -64,7 +64,9 @@ exports.verifyPayment = async (req, res) => {
       return res.status(400).json({ error: "Invalid signature" });
     }
 
-    const userId = req.user.id;
+    const userId = req.user.userId;
+    console.log(userId,"###########");
+    
 
     // Update wallet balance
     const wallet = await Wallet.findOneAndUpdate(
@@ -75,14 +77,13 @@ exports.verifyPayment = async (req, res) => {
 
     // Save transaction
     await Transaction.create({
-      user: userId,
+      userId,
       amount,
       type: "credit",
       status: "success",
       razorpay_order_id,
       razorpay_payment_id,
     });
-
     res.status(200).json({ message: "₹" + amount + " added to wallet", wallet });
   } catch (err) {
     console.error("Error in verifyPayment:", err);
