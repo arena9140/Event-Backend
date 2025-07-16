@@ -4,13 +4,18 @@ require("dotenv").config();
 const verifyTokenPlayer = async (req, res, next) => {
     try {
         const token = req.header("Authorization")?.replace("Bearer ", "").trim();
+        
         if (!token) {
             return res.status(401).json({ error: "Token is required" });
         }
+        console.log(token);
+        console.log(process.env.playerkey);
+        
         const decoded = jwt.verify(token, process.env.playerkey);
+        console.log(decoded,"#########");
+        
         req.user = decoded;
-        console.log(req.user);
-                 
+        console.log(req.user);       
         next();
     } catch (error) {
         return res.status(401).json({ error: "Invalid or expired token" });
