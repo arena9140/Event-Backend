@@ -3,24 +3,47 @@ const jwt = require("jsonwebtoken")
 
 const Register = async (req, res) => {
     const { name, email, password } = req.body;
-    const newUser = new AdminRegister({ name, email, password });
-    const result = await newUser.save();
-    if (result) {
+
+    try {
+        const existingUser = await AdminRegister.findOne({ email });
+
+        if (existingUser) {
+            return res.send({
+                code: 409,
+                message: "User already exists",
+                success: false,
+                error: true
+            });
+        }
+
+        const newUser = new AdminRegister({ name, email, password });
+        const result = await newUser.save();
+
+        if (result) {
+            res.send({
+                code: 201,
+                message: "User created successfully",
+                success: true,
+                error: false
+            });
+        } else {
+            res.send({
+                code: 500,
+                message: "Failed to save user",
+                success: false,
+                error: true
+            });
+        }
+    } catch (err) {
         res.send({
-            code: 201,
-            message: "User created successfully",
-            success: true,
-            error: false
-        })
-    } else {
-        res.send({
-            code: 404,
-            message: "Failed to save user",
+            code: 500,
+            message: "Internal Server Error",
             success: false,
             error: true
-        })
+        });
     }
 }
+
 
 const Login = async (req, res) => {
     const { email, password } = req.body;
