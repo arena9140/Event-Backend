@@ -65,17 +65,16 @@ exports.verifyPayment = async (req, res) => {
     }
 
     const userId = req.user.userId;
-    console.log(userId,"###########");
+    console.log(userId);
     
-
-    // Update wallet balance
     const wallet = await Wallet.findOneAndUpdate(
       { user: userId },
       { $inc: { balance: amount } },
       { new: true, upsert: true }
     );
 
-    // Save transaction
+    console.log(wallet);
+
     await Transaction.create({
       userId,
       amount,
@@ -87,6 +86,27 @@ exports.verifyPayment = async (req, res) => {
     res.status(200).json({ message: "₹" + amount + " added to wallet", wallet });
   } catch (err) {
     console.error("Error in verifyPayment:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+exports.getWalletBalance = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    console.log(userId);
+    
+    const wallet = await Wallet.findOne({ user: userId });
+
+    if (!wallet) {
+      return res.status(404).json({ error: "Wallet not found" });
+    }
+
+    res.status(200).json({
+      balance: wallet.balance,
+      message: "Wallet balance fetched successfully",
+    });
+  } catch (err) {
+    console.error("Error in getWalletBalance:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
