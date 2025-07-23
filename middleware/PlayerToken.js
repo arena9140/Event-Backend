@@ -8,12 +8,7 @@ const verifyTokenPlayer = async (req, res, next) => {
         if (!token) {
             return res.status(401).json({ error: "Token is required" });
         }
-        console.log(token);
-        console.log(process.env.playerkey);
-        
         const decoded = jwt.verify(token, process.env.playerkey);
-        console.log(decoded,"#########");
-        
         req.user = decoded;
         console.log(req.user);       
         next();
